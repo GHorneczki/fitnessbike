@@ -1,5 +1,7 @@
 🚴 DIY Smart Bike Trainer (ESP32 + FTMS + Zwift)
 
+https://www.instructables.com/-DIY-Smart-Bike-Trainer/
+
 Description: 
 
 A fully controllable DIY Smart Indoor Bike Trainer based on ESP32 (ESP32-C3) implementing the Bluetooth FTMS (Fitness Machine Service) protocol.
