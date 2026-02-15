@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>FTMS Config</title>
+<style>
+body { font-family:sans-serif; background:#111; color:#eee; padding:20px; }
+input, button { width:100%; font-size:1.1em; margin-bottom:10px; }
+#msg { color:#4caf50; display:none; }
+#rehomemsg { color:#ff9800; display:none; }
+#status { margin-top:20px; color:#ccc; }
+</style>
+</head>
+<body>
+
+<h2>Training bike – FMTS Config</h2>
+
+<div id="msg">Mentés sikeres</div>
+
+<form id="cfg">
+<label>nullPointRotation</label>
+<input id="nullRot" name="nullRot" type="number" step="0.01">
+
+<label>rotationRange</label>
+<input id="rotRange" name="rotRange" type="number" step="0.1">
+
+<label>cadenceFactor</label>
+<input id="cadFact" name="cadFact" type="number" step="1">
+
+<label>speedFactor</label>
+<input id="spdFact" name="spdFact" type="number" step="0.01">
+
+<button type="submit">Save</button>
+</form>
+
+<button id="rehome" style="background:#b71c1c;color:white">
+Rehome
+</button>
+
+<div id="rehomemsg">Rehome folyamatban…</div>
+
+<div id="status">
+Stepper: <span id="pos">–</span>%<br>
+Grade: <span id="grade">–</span> %
+</div>
+
+<script>
+fetch('/config').then(r=>r.json()).then(c=>{
+  nullRot.value = c.nullRot;
+  rotRange.value = c.rotRange;
+  cadFact.value = c.cadFact;
+  spdFact.value = c.spdFact;
+});
+
+cfg.onsubmit = e => {
+  e.preventDefault();
+  fetch('/save', {method:'POST', body:new FormData(cfg)})
+    .then(()=> {
+      msg.style.display='block';
+      setTimeout(()=>msg.style.display='none',3000);
+    });
+};
+
+rehome.onclick = e => {
+  e.preventDefault();
+  rehomemsg.style.display='block';
+  fetch('/rehome', {method:'POST'})
+    .finally(()=>setTimeout(()=>rehomemsg.style.display='none',4000));
+};
+
+setInterval(()=>{
+  fetch('/status').then(r=>r.json()).then(s=>{
+    pos.textContent=s.stepperPercent.toFixed(1);
+    grade.textContent=s.grade.toFixed(1);
+  });
+},1000);
+</script>
+
+</body>
+</html>
